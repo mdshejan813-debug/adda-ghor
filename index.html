@@ -1,1 +1,58 @@
-centermin-wwcentermin-wwcentermin-ww
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>আড্ডা ঘর</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{font-family:sans-serif}</style>
+</head>
+<body class="bg-[#f0f2f5]">
+<div class="bg-green-700 text-white p-3 flex justify-between"><b>আড্ডা ঘর - শেরপুর</b><span onclick="openProfile()">👤</span></div>
+
+<div class="bg-white m-2 p-3 rounded-xl">
+<div class="flex gap-2">
+<img id="myAv" src="https://i.pravatar.cc/100?img=12" class="w-10 h-10 rounded-full">
+<textarea id="postText" class="flex-1 bg-gray-100 rounded-xl p-2 text-sm" placeholder="কি ভাবছো?"></textarea>
+</div>
+<input type="file" id="imgIn" accept="image/*" class="text-xs mt-2">
+<button onclick="makePost()" class="bg-green-700 text-white w-full mt-2 py-2 rounded-full font-bold">Post করো</button>
+</div>
+
+<div id="feed"></div>
+
+<!-- Profile Edit Modal -->
+<div id="pModal" class="hidden fixed inset-0 bg-black/50 z-50 p-4 flex items-end">
+<div class="bg-white w-full rounded-2xl p-4">
+<h3 class="font-bold text-center">প্রোফাইল চেঞ্জ করো</h3>
+<img id="pAv" src="https://i.pravatar.cc/100?img=12" class="w-20 h-20 rounded-full mx-auto mt-2">
+<input type="file" id="avIn" accept="image/*" class="w-full text-xs mt-2">
+<input id="pName" value="Md Shejan Sheikh" class="w-full border p-2 rounded mt-3">
+<button onclick="saveP()" class="bg-green-700 text-white w-full py-2 rounded-full mt-3">Save</button>
+<button onclick="closeP()" class="bg-gray-200 w-full py-2 rounded-full mt-2">Close</button>
+</div>
+</div>
+
+<script>
+let profile=JSON.parse(localStorage.getItem('myP')||'{"name":"Md Shejan Sheikh","av":"https://i.pravatar.cc/100?img=12"}');
+let posts=JSON.parse(localStorage.getItem('myPosts')||'[]');
+let tempImg="";
+
+document.getElementById('imgIn').onchange=e=>{let r=new FileReader();r.onload=x=>tempImg=x.target.result;r.readAsDataURL(e.target.files[0]);}
+document.getElementById('avIn').onchange=e=>{let r=new FileReader();r.onload=x=>{profile.av=x.target.result;document.getElementById('pAv').src=x.target.result;};r.readAsDataURL(e.target.files[0]);}
+
+function openProfile(){document.getElementById('pModal').classList.remove('hidden');document.getElementById('pName').value=profile.name;document.getElementById('pAv').src=profile.av;}
+function closeP(){document.getElementById('pModal').classList.add('hidden');}
+function saveP(){profile.name=document.getElementById('pName').value;localStorage.setItem('myP',JSON.stringify(profile));closeP();render();}
+
+function makePost(){
+let t=document.getElementById('postText').value;
+if(!t&&!tempImg)return alert('কিছু লেখো');
+posts.unshift({id:Date.now(),text:t,img:tempImg});localStorage.setItem('myPosts',JSON.stringify(posts));
+document.getElementById('postText').value='';tempImg='';render();
+}
+
+function shareFB(txt){window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href)+'&quote='+encodeURIComponent(txt),'_blank')}
+function shareTG(txt){window.open('https://t.me/share/url?url='+encodeURIComponent(location.href)+'&text='+encodeURIComponent(txt),'_blank')}
+function shareWA(txt){window.open('https://wa.me/?text='+encodeURIComponent(txt+' '+location.href),'_blank')}
+function copyLink(){navigator.clipboard.writeText(location.href);
